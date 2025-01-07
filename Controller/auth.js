@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const validateRequest = require("../middleware/validateRequest");
-
 // Middleware to validate token
 exports.validateToken = async (req, res) => {
   try {
@@ -19,8 +17,10 @@ exports.validateToken = async (req, res) => {
 
 // Register route
 exports.register = async (req, res) => {
+
   console.log(req.body);
   console.log('hello');
+
   try {
 
 
@@ -41,17 +41,21 @@ exports.register = async (req, res) => {
 
 // Login route
 exports.login = async (req, res) => {
-    console.log('hel');
+    console.log(req.body);
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+    console.log(user);
 
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.json({ user, token });
+    const { password: _, ...userdata } = user.toObject();
+
+    // Send the response without the password
+    res.json({ user: userdata, token, message: "Login successful" , status: 200});
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

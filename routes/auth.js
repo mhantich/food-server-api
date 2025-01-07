@@ -9,11 +9,12 @@ const validateRequest = require("../middleware/validateRequest");
 
 router.post(
   '/register',
-  registerValidation,
-  validateRequest,
-  upload.single("profileImage"),
-  register
+  upload.single('profileImage'), // Handles file upload
+  registerValidation,            // Validates req.body
+  validateRequest,               // Returns errors if validation fails
+  register                       // Registration logic
 );
+
 router.post("/login", login);
  router.get("/profile", auth, profile);
  router.get(
