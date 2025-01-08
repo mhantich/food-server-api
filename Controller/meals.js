@@ -13,7 +13,7 @@ const getMeals = async (req, res) => {
 
     // Build query object
     const query = {};
-    console.log(req.query );
+   
 
     // Category search (using ObjectId)
     if (category) {
@@ -58,7 +58,6 @@ const getMeals = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    console.log(query)
 
     const meals = await Meal.find(query)
       .populate('category', 'name') // Populate category with its name

@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 exports.auth = (req, res, next) => {
+
+  
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    console.log(token)
-    console.log(req.header('Authorization'))
-    console.log('working')
+    
     if (!token) {
       return res.status(401).json({ message: 'No auth token found' });
     }
@@ -24,4 +24,5 @@ exports.authAdmin = (req, res, next) => {
   }
   next();
 };
+
 

@@ -18,8 +18,7 @@ exports.validateToken = async (req, res) => {
 // Register route
 exports.register = async (req, res) => {
 
-  console.log(req.body);
-  console.log('hello');
+
 
   try {
 
@@ -33,7 +32,7 @@ exports.register = async (req, res) => {
     await user.save();
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.status(201).json({ user, token });
+    res.status(201).json({ user, token, message: "Registration successful" , status: 200});
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -41,11 +40,11 @@ exports.register = async (req, res) => {
 
 // Login route
 exports.login = async (req, res) => {
-    console.log(req.body);
+
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    console.log(user);
+
 
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: "Invalid credentials" });

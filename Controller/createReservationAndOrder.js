@@ -26,6 +26,7 @@ exports.checkTableAvailability = async (tableId, date, startTime, endTime) => {
 };
 
 exports.createReservationAndOrder = async (req, res) => {
+
   try {
     // Check table availability first
     const isAvailable = await exports.checkTableAvailability(
@@ -34,6 +35,7 @@ exports.createReservationAndOrder = async (req, res) => {
       req.body.startTime,
       req.body.endTime
     );
+    
 
     // If table is not available, return error immediately
     if (!isAvailable) {
@@ -42,6 +44,7 @@ exports.createReservationAndOrder = async (req, res) => {
         error: 'Table is not available for the selected time slot'
       });
     }
+
 
     // Create reservation
     const reservation = new Reservation({
@@ -57,8 +60,8 @@ exports.createReservationAndOrder = async (req, res) => {
 
     // Create order
     const order = new Order({
+      userId: req.body.userId,
       customer: {
-        userId: req.body.userId,
         firstName: req.body.customer.firstName,
         lastName: req.body.customer.lastName,
         email: req.body.customer.email,
@@ -119,8 +122,20 @@ const calculateTotalAmount = (items) => {
 
 
 exports.getUserOrders = async (req, res) => {
-  const userId = req.params.userId;
-  const orders = await Order.find({ userId: userId });
-  console.log(orders);
+
+
+  const userIdFromToken = req.user.id; // Extracted from the decoded token
+  const userIdFromParams = req.params.userId; // Extracted from the request params
+
+
+
+
+  // Ensure the authenticated user matches the requested user
+  if (userIdFromToken !== userIdFromParams) {
+    return res.status(403).json({ message: 'Access denied' });
+  }
+
+  const orders = await Order.find({ userId: userIdFromToken });
+
   res.json(orders);
 };

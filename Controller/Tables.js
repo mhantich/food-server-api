@@ -14,7 +14,6 @@ exports.getAllTables = async (req, res) => {
 
 exports.checkTableAvailability = async (req, res) => {
   const { tableId, reservationDate, startTime, endTime } = req.query;
-  console.log(req.query);
 
   try {
     // Check for overlapping reservations for the chosen table

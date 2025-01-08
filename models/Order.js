@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
+    _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Meal',
+    required: true
+  },
   name: {
     type: String,
     required: true
@@ -56,6 +61,10 @@ const orderSchema = new mongoose.Schema({
   reservationId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Reservation'
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
 
   paymentStatus: {
