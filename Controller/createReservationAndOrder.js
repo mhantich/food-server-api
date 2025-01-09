@@ -136,6 +136,12 @@ exports.getUserOrders = async (req, res) => {
   }
 
   const orders = await Order.find({ userId: userIdFromToken });
+  if (!orders) {
+    return res.status(404).json({ message: 'No orders found' });
+  }
 
-  res.json(orders);
+  res.json({
+    success: true,
+    data: orders
+  });
 };

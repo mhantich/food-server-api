@@ -9,14 +9,22 @@ const errorHandler = require("./middleware/errorHandler");
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL, // Your frontend domain
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Allowed HTTP methods
+  credentials: true, // Allow credentials (cookies or headers)
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization", // Include custom headers such as tokens
+  ], // Explicitly allow headers
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Create uploads directory if it doesn't exist
 const fs = require("fs");
-const Reservation = require("./models/Reservation");
 
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
@@ -27,6 +35,7 @@ const connect = async () => {
     const Contected = await mongoose.connect(process.env.MONGODB_URI);
   } catch (error) {}
 };
+
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
