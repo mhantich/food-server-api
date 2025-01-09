@@ -1,4 +1,5 @@
 const Meal = require("../models/Meal");
+const redis = require('../utils/redis');
 
 const getMeals = async (req, res) => {
   try {
@@ -11,36 +12,27 @@ const getMeals = async (req, res) => {
       sortBy,
     } = req.query;
 
-    // Build query object
     const query = {};
-   
-
-    // Category search (using ObjectId)
+    
     if (category) {
       query.category = category;
     }
 
-    // Name search (case-insensitive partial match)
     if (search) {
-      query.name = { $regex: search};
+      query.name = { $regex: search };
     }
 
-  
-
-    // Price range
     if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = Number(minPrice);
       if (maxPrice) query.price.$lte = Number(maxPrice);
     }
 
-    // Popular items
     if (isPopular) {
       query.isPopular = isPopular === 'true';
     }
 
-    // Define sort logic
-    let sortField = '-createdAt'; // Default sort by newest items
+    let sortField = '-createdAt';
     if (sortBy) {
       const sortMapping = {
         pricelow: 'price',
@@ -52,20 +44,16 @@ const getMeals = async (req, res) => {
       sortField = sortMapping[sortBy] || sortMapping.pricelow;
     }
 
-
-    // Execute query with pagination
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-
     const meals = await Meal.find(query)
-      .populate('category', 'name') // Populate category with its name
+      .populate('category', 'name')
       .skip(skip)
       .limit(limit)
-      .sort(sortField); // Apply the sort field here
+      .sort(sortField);
 
-    // Get total count for pagination
     const total = await Meal.countDocuments(query);
 
     res.status(200).json({
